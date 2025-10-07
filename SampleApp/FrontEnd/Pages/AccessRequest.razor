@@ -1,0 +1,91 @@
+@page "/accessrequest"
+@using FrontEnd.Data
+@inject AccessRequestClient AccessRequestClient
+
+<PageTitle>Управление доступом</PageTitle>
+
+<h1>Управление доступом к информационным ресурсам</h1>
+
+@if (_resources == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    <div class="mb-4">
+        <h3>Доступные информационные ресурсы</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Владелец</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var resource in _resources)
+                {
+                    <tr>
+                        <td>@resource.Name</td>
+                        <td>@resource.Description</td>
+                        <td>@resource.Owner</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_username))
+    {
+        <div class="mb-4">
+            <h3>Информация о пользователе</h3>
+            @if (_user != null)
+            {
+                <div>
+                    <p><strong>Имя:</strong> @_user.DisplayName</p>
+                    <p><strong>Должность:</strong> @_user.Title</p>
+                    <p><strong>Отдел:</strong> @_user.Department</p>
+                    <p><strong>Email:</strong> @_user.Email</p>
+                    <p><strong>Текущие группы доступа:</strong></p>
+                    <ul>
+                        @foreach (var group in _user.Groups)
+                        {
+                            <li>@group</li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <p>Пользователь не найден.</p>
+            }
+        </div>
+    }
+
+    <div class="mb-4">
+        <h3>Поиск пользователя</h3>
+        <div class="input-group mb-3">
+            <input @bind="_username" class="form-control" placeholder="Введите имя пользователя"/>
+            <button class="btn btn-primary" @onclick="LoadUserInfo">Найти</button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ADResource>? _resources;
+    private string _username = string.Empty;
+    private ADUser? _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _resources = await AccessRequestClient.GetResourcesAsync();
+    }
+
+    private async Task LoadUserInfo()
+    {
+        if (!string.IsNullOrEmpty(_username))
+        {
+            _user = await AccessRequestClient.GetUserAsync(_username);
+        }
+    }
+}

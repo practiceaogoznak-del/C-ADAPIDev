@@ -13,6 +13,22 @@ builder.Services.AddHttpClient<WeatherForecastClient>(c =>
     c.BaseAddress = new(url);
 });
 
+builder.Services.AddHttpClient<AccessRequestClient>(c =>
+{
+    var url = builder.Configuration["BACKEND_URL"] 
+        ?? throw new InvalidOperationException("BACKEND_URL is not set");
+
+    c.BaseAddress = new(url);
+});
+
+builder.Services.AddHttpClient<AuthenticationService>(c =>
+{
+    var url = builder.Configuration["BACKEND_URL"] 
+        ?? throw new InvalidOperationException("BACKEND_URL is not set");
+
+    c.BaseAddress = new(url);
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

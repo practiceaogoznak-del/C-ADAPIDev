@@ -1,0 +1,16 @@
+{
+    "Version": 3,
+    "ListAllProjects": false,
+    "MultiProjectConfigurations": {
+        "Portal": {
+            "Projects": {
+                "BackEnd\\BackEnd.csproj": {
+                    "ProfileName": "BackEnd"
+                },
+                "FrontEnd\\FrontEnd.csproj": {
+                    "ProfileName": "FrontEnd"
+                }
+            }
+        }
+    }
+}
