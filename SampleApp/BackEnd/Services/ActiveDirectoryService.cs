@@ -41,6 +41,9 @@ public class ActiveDirectoryService : IActiveDirectoryService
 
     private async Task<T> ExecuteWithRetryAsync<T>(Func<PrincipalContext, T> action, string operation)
     {
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentException.ThrowIfNullOrEmpty(operation);
+
         Exception? lastException = null;
         
         foreach (var attempt in Enumerable.Range(1, _settings.RetryAttempts))
@@ -56,9 +59,18 @@ public class ActiveDirectoryService : IActiveDirectoryService
                     domainController,
                     _settings.Container);
 
-                return action(context);
+                var result = action(context);
+                
+                if (attempt > 1)
+                {
+                    _logger.LogInformation(
+                        "Operation {Operation} succeeded on attempt {Attempt} using domain controller {DomainController}", 
+                        operation, attempt, domainController);
+                }
+                
+                return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not ArgumentException and not InvalidOperationException)
             {
                 lastException = ex;
                 _logger.LogWarning(ex, 
@@ -67,7 +79,7 @@ public class ActiveDirectoryService : IActiveDirectoryService
                 
                 if (attempt < _settings.RetryAttempts)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(_settings.RetryDelaySeconds));
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Min(_settings.RetryDelaySeconds * attempt, 30)));
                 }
             }
         }
@@ -88,18 +100,47 @@ public class ActiveDirectoryService : IActiveDirectoryService
             
             foreach (var result in searcher.FindAll().Cast<GroupPrincipal>())
             {
-                if (result.Description?.StartsWith("Resource:") == true)
+                if (result?.Description == null || !result.Description.StartsWith("Resource:"))
                 {
+                    continue;
+                }
+
+                try
+                {
+                    var description = result.Description.Substring(9).Trim();
+                    var owner = string.Empty;
+                    
+                    if (result.Description.Contains("Owner:"))
+                    {
+                        var parts = result.Description.Split("Owner:", StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length > 1)
+                        {
+                            owner = parts[1].Trim();
+                        }
+                    }
+
+                    var members = result.Members?
+                        .Where(m => m != null)
+                        .Select(m => m.SamAccountName ?? string.Empty)
+                        .Where(name => !string.IsNullOrWhiteSpace(name))
+                        .ToList() ?? new List<string>();
+
                     resources.Add(new ADResource
                     {
                         Name = result.Name ?? string.Empty,
-                        Description = result.Description.Substring(9).Trim(),
+                        Description = description,
                         GroupName = result.SamAccountName ?? string.Empty,
-                        Owner = result.Description.Contains("Owner:") 
-                            ? result.Description.Split("Owner:")[1].Trim() 
-                            : string.Empty,
-                        Members = result.Members.Select(m => m.SamAccountName ?? string.Empty).ToList()
+                        Owner = owner,
+                        Members = members
                     });
+
+                    _logger.LogDebug("Added resource {ResourceName} with {MemberCount} members", 
+                        result.Name ?? "Unknown", members.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to process resource group {GroupName}", 
+                        result.Name ?? "Unknown");
                 }
             }
 
@@ -118,17 +159,46 @@ public class ActiveDirectoryService : IActiveDirectoryService
             
             foreach (var result in searcher.FindAll().Cast<UserPrincipal>())
             {
-                users.Add(new ADUser
+                if (result == null)
                 {
-                    SamAccountName = result.SamAccountName ?? string.Empty,
-                    DisplayName = result.DisplayName ?? string.Empty,
-                    EmployeeId = result.EmployeeId ?? string.Empty,
-                    Title = result.Description ?? string.Empty,
-                    Department = result.Description?.Split(";").FirstOrDefault() ?? string.Empty,
-                    Email = result.EmailAddress ?? string.Empty,
-                    PhoneNumber = result.VoiceTelephoneNumber ?? string.Empty,
-                    Groups = result.GetGroups().Select(g => g.SamAccountName ?? string.Empty).ToList()
-                });
+                    continue;
+                }
+
+                try
+                {
+                    var department = string.Empty;
+                    if (!string.IsNullOrEmpty(result.Description))
+                    {
+                        var parts = result.Description.Split(';');
+                        department = parts.FirstOrDefault() ?? string.Empty;
+                    }
+
+                    var groups = result.GetGroups()?
+                        .Where(g => g != null)
+                        .Select(g => g.SamAccountName ?? string.Empty)
+                        .Where(name => !string.IsNullOrWhiteSpace(name))
+                        .ToList() ?? new List<string>();
+
+                    users.Add(new ADUser
+                    {
+                        SamAccountName = result.SamAccountName ?? string.Empty,
+                        DisplayName = result.DisplayName ?? string.Empty,
+                        EmployeeId = result.EmployeeId ?? string.Empty,
+                        Title = result.Description ?? string.Empty,
+                        Department = department,
+                        Email = result.EmailAddress ?? string.Empty,
+                        PhoneNumber = result.VoiceTelephoneNumber ?? string.Empty,
+                        Groups = groups
+                    });
+
+                    _logger.LogDebug("Added user {UserName} with {GroupCount} groups", 
+                        result.SamAccountName ?? "Unknown", groups.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to process user {UserName}", 
+                        result.SamAccountName ?? "Unknown");
+                }
             }
 
             return users;
@@ -137,6 +207,12 @@ public class ActiveDirectoryService : IActiveDirectoryService
 
     public async Task<ADUser?> GetUserAsync(string username)
     {
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            _logger.LogWarning("GetUserAsync called with empty username");
+            return null;
+        }
+
         _logger.LogInformation("Getting AD user: {Username}", username);
         return await ExecuteWithRetryAsync(context =>
         {
@@ -148,17 +224,43 @@ public class ActiveDirectoryService : IActiveDirectoryService
                 return null;
             }
 
-            return new ADUser
+            try
             {
-                SamAccountName = userPrincipal.SamAccountName ?? string.Empty,
-                DisplayName = userPrincipal.DisplayName ?? string.Empty,
-                EmployeeId = userPrincipal.EmployeeId ?? string.Empty,
-                Title = userPrincipal.Description ?? string.Empty,
-                Department = userPrincipal.Description?.Split(";").FirstOrDefault() ?? string.Empty,
-                Email = userPrincipal.EmailAddress ?? string.Empty,
-                PhoneNumber = userPrincipal.VoiceTelephoneNumber ?? string.Empty,
-                Groups = userPrincipal.GetGroups().Select(g => g.SamAccountName ?? string.Empty).ToList()
-            };
+                var department = string.Empty;
+                if (!string.IsNullOrEmpty(userPrincipal.Description))
+                {
+                    var parts = userPrincipal.Description.Split(';');
+                    department = parts.FirstOrDefault() ?? string.Empty;
+                }
+
+                var groups = userPrincipal.GetGroups()?
+                    .Where(g => g != null)
+                    .Select(g => g.SamAccountName ?? string.Empty)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .ToList() ?? new List<string>();
+
+                var user = new ADUser
+                {
+                    SamAccountName = userPrincipal.SamAccountName ?? string.Empty,
+                    DisplayName = userPrincipal.DisplayName ?? string.Empty,
+                    EmployeeId = userPrincipal.EmployeeId ?? string.Empty,
+                    Title = userPrincipal.Description ?? string.Empty,
+                    Department = department,
+                    Email = userPrincipal.EmailAddress ?? string.Empty,
+                    PhoneNumber = userPrincipal.VoiceTelephoneNumber ?? string.Empty,
+                    Groups = groups
+                };
+
+                _logger.LogDebug("Successfully retrieved user {Username} with {GroupCount} groups",
+                    username, groups.Count);
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing user data for {Username}", username);
+                throw;
+            }
         }, $"GetUser_{username}");
     }
 
@@ -244,141 +346,5 @@ public class ActiveDirectoryService : IActiveDirectoryService
 
             return true;
         }, $"RemoveUserFromGroup_{username}_{groupName}");
-    }
-}
-            using var searcher = new PrincipalSearcher(groupPrincipal);
-            
-            foreach (var result in searcher.FindAll().Cast<GroupPrincipal>())
-            {
-                if (result.Description?.StartsWith("Resource:") == true)
-                {
-                    resources.Add(new ADResource
-                    {
-                        Name = result.Name,
-                        Description = result.Description.Substring(9).Trim(),
-                        GroupName = result.SamAccountName,
-                        Owner = result.Description.Contains("Owner:") 
-                            ? result.Description.Split("Owner:")[1].Trim() 
-                            : string.Empty,
-                        Members = result.Members.Select(m => m.SamAccountName).ToList()
-                    });
-                }
-            }
-        });
-
-        return resources;
-    }
-
-    public async Task<List<ADUser>> GetAllUsersAsync()
-    {
-        var users = new List<ADUser>();
-        
-        await Task.Run(() =>
-        {
-            using var context = new PrincipalContext(ContextType.Domain, _domain, _container);
-            using var userPrincipal = new UserPrincipal(context);
-            using var searcher = new PrincipalSearcher(userPrincipal);
-            
-            foreach (var result in searcher.FindAll().Cast<UserPrincipal>())
-            {
-                users.Add(new ADUser
-                {
-                    SamAccountName = result.SamAccountName,
-                    DisplayName = result.DisplayName,
-                    EmployeeId = result.EmployeeId,
-                    Title = result.Description ?? string.Empty,
-                    Department = result.Description?.Split(";").FirstOrDefault() ?? string.Empty,
-                    Email = result.EmailAddress ?? string.Empty,
-                    PhoneNumber = result.VoiceTelephoneNumber ?? string.Empty,
-                    Groups = result.GetGroups().Select(g => g.SamAccountName).ToList()
-                });
-            }
-        });
-
-        return users;
-    }
-
-    public async Task<ADUser?> GetUserAsync(string username)
-    {
-        ADUser? user = null;
-        
-        await Task.Run(() =>
-        {
-            using var context = new PrincipalContext(ContextType.Domain, _domain, _container);
-            using var userPrincipal = UserPrincipal.FindByIdentity(context, username);
-            
-            if (userPrincipal != null)
-            {
-                user = new ADUser
-                {
-                    SamAccountName = userPrincipal.SamAccountName,
-                    DisplayName = userPrincipal.DisplayName,
-                    EmployeeId = userPrincipal.EmployeeId,
-                    Title = userPrincipal.Description ?? string.Empty,
-                    Department = userPrincipal.Description?.Split(";").FirstOrDefault() ?? string.Empty,
-                    Email = userPrincipal.EmailAddress ?? string.Empty,
-                    PhoneNumber = userPrincipal.VoiceTelephoneNumber ?? string.Empty,
-                    Groups = userPrincipal.GetGroups().Select(g => g.SamAccountName).ToList()
-                };
-            }
-        });
-
-        return user;
-    }
-
-    public async Task<List<string>> GetUserGroupsAsync(string username)
-    {
-        var groups = new List<string>();
-        
-        await Task.Run(() =>
-        {
-            using var context = new PrincipalContext(ContextType.Domain, _domain, _container);
-            using var userPrincipal = UserPrincipal.FindByIdentity(context, username);
-            
-            if (userPrincipal != null)
-            {
-                groups.AddRange(userPrincipal.GetGroups().Select(g => g.SamAccountName));
-            }
-        });
-
-        return groups;
-    }
-
-    public async Task AddUserToGroupAsync(string username, string groupName)
-    {
-        await Task.Run(() =>
-        {
-            using var context = new PrincipalContext(ContextType.Domain, _domain, _container);
-            using var userPrincipal = UserPrincipal.FindByIdentity(context, username);
-            using var groupPrincipal = GroupPrincipal.FindByIdentity(context, groupName);
-            
-            if (userPrincipal != null && groupPrincipal != null)
-            {
-                if (!groupPrincipal.Members.Contains(userPrincipal))
-                {
-                    groupPrincipal.Members.Add(userPrincipal);
-                    groupPrincipal.Save();
-                }
-            }
-        });
-    }
-
-    public async Task RemoveUserFromGroupAsync(string username, string groupName)
-    {
-        await Task.Run(() =>
-        {
-            using var context = new PrincipalContext(ContextType.Domain, _domain, _container);
-            using var userPrincipal = UserPrincipal.FindByIdentity(context, username);
-            using var groupPrincipal = GroupPrincipal.FindByIdentity(context, groupName);
-            
-            if (userPrincipal != null && groupPrincipal != null)
-            {
-                if (groupPrincipal.Members.Contains(userPrincipal))
-                {
-                    groupPrincipal.Members.Remove(userPrincipal);
-                    groupPrincipal.Save();
-                }
-            }
-        });
     }
 }
