@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <defs>
+    <style>
+      .goznak-logo {
+        fill: #ffffff;
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+      }
+      .goznak-accent {
+        fill: #FFD700;
+      }
+    </style>
+  </defs>
+  <g transform="translate(10,40)">
+    <path class="goznak-accent" d="M0,0 h10 l5,-20 l5,20 h10 l-15,-40 h-10 z"/>
+    <text class="goznak-logo" x="40" y="0" font-size="32">ГОЗНАК</text>
+  </g>
+</svg>

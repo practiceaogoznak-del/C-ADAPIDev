@@ -1,25 +1,67 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FrontEnd</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+﻿﻿@using Microsoft.AspNetCore.Components.Routing
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="accessrequest">
-                <span class="oi oi-key" aria-hidden="true"></span> Управление доступом
-            </NavLink>
-        </div>
-    </nav>
+<div class="nav-menu">
+    <button title="Меню навигации" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+        <nav class="flex-column">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Главная
+                </NavLink>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">Задачи</div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="tasks">
+                        <span class="oi oi-task" aria-hidden="true"></span> Список задач
+                    </NavLink>
+                </div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="tasks/create">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Создать задачу
+                    </NavLink>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <NavLink class="nav-link" href="documents">
+                    <span class="oi oi-document" aria-hidden="true"></span> Документы
+                </NavLink>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-group-title">Статистика</div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="reports">
+                        <span class="oi oi-graph" aria-hidden="true"></span> Отчеты
+                    </NavLink>
+                </div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="analytics">
+                        <span class="oi oi-pie-chart" aria-hidden="true"></span> Аналитика
+                    </NavLink>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">Настройки</div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="profile">
+                        <span class="oi oi-person" aria-hidden="true"></span> Профиль
+                    </NavLink>
+                </div>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="settings">
+                        <span class="oi oi-cog" aria-hidden="true"></span> Параметры
+                    </NavLink>
+                </div>
+            </div>
+        </nav>
+    </div>
 </div>
 
 @code {

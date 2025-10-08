@@ -1,9 +1,11 @@
 using FrontEnd.Data;
+using FrontEnd.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<TaskService>();
 
 builder.Services.AddHttpClient<WeatherForecastClient>(c =>
 {

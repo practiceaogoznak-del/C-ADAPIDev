@@ -1,0 +1,121 @@
+:root {
+    --goznak-primary: #005BAA;     /* Основной синий цвет Гознака */
+    --goznak-secondary: #2D4B9B;   /* Дополнительный синий */
+    --goznak-accent: #FFD700;      /* Золотой акцент */
+    --goznak-dark: #1A1A1A;        /* Темный фон */
+    --goznak-light: #F5F5F5;       /* Светлый фон */
+    --goznak-text: #333333;        /* Основной цвет текста */
+    --goznak-text-light: #FFFFFF;  /* Светлый текст */
+    --goznak-border: #DDDDDD;      /* Цвет границ */
+    
+    /* Дополнительные оттенки основных цветов */
+    --goznak-primary-light: #3388CC;
+    --goznak-primary-dark: #004488;
+    --goznak-secondary-light: #4D6BB9;
+    --goznak-secondary-dark: #1D3B8B;
+    
+    /* Семантические цвета */
+    --goznak-success: #28A745;     /* Зеленый для успешных операций */
+    --goznak-warning: #FFC107;     /* Желтый для предупреждений */
+    --goznak-danger: #DC3545;      /* Красный для ошибок */
+    --goznak-info: #17A2B8;        /* Голубой для информационных сообщений */
+}
+
+/* Основные стили */
+body {
+    color: var(--goznak-text);
+    background-color: var(--goznak-light);
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--goznak-primary-dark);
+    font-weight: 500;
+}
+
+/* Ссылки */
+a {
+    color: var(--goznak-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--goznak-primary-light);
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: var(--goznak-primary);
+    border-color: var(--goznak-primary);
+    color: var(--goznak-text-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--goznak-primary-light);
+    border-color: var(--goznak-primary-light);
+}
+
+.btn-secondary {
+    background-color: var(--goznak-secondary);
+    border-color: var(--goznak-secondary);
+    color: var(--goznak-text-light);
+}
+
+.btn-secondary:hover {
+    background-color: var(--goznak-secondary-light);
+    border-color: var(--goznak-secondary-light);
+}
+
+/* Карточки */
+.card {
+    border-color: var(--goznak-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background-color: var(--goznak-primary);
+    color: var(--goznak-text-light);
+    border-bottom: none;
+}
+
+/* Таблицы */
+.table thead th {
+    background-color: var(--goznak-primary);
+    color: var(--goznak-text-light);
+    border-bottom: 2px solid var(--goznak-primary-dark);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,91,170,0.05);
+}
+
+/* Формы */
+.form-control:focus {
+    border-color: var(--goznak-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0,91,170,0.25);
+}
+
+/* Навигация */
+.nav-tabs .nav-link.active {
+    color: var(--goznak-primary);
+    border-color: var(--goznak-primary);
+}
+
+/* Алерты */
+.alert-primary {
+    background-color: rgba(0,91,170,0.1);
+    border-color: var(--goznak-primary);
+    color: var(--goznak-primary-dark);
+}
+
+/* Бейджи */
+.badge-primary {
+    background-color: var(--goznak-primary);
+}
+
+.badge-secondary {
+    background-color: var(--goznak-secondary);
+}

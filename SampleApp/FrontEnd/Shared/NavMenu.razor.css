@@ -1,67 +1,75 @@
 .navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--goznak-secondary);
+    border: none;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border-radius: 4px;
 }
 
 .top-row {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.navbar-brand {
-    font-size: 1.1rem;
+    background-color: var(--goznak-dark);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
 }
 
 .oi {
     width: 2rem;
     font-size: 1.1rem;
-    vertical-align: text-top;
-    top: -2px;
+    color: var(--goznak-accent);
+    margin-right: 0.5rem;
 }
 
 .nav-item {
     font-size: 0.9rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
-    .nav-item:first-of-type {
-        padding-top: 1rem;
-    }
+.nav-group-title {
+    color: var(--goznak-accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.5rem 0 0.5rem;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
 
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
-    }
-
-    .nav-item ::deep a {
-        color: #d7d7d7;
-        border-radius: 4px;
-        height: 3rem;
-        display: flex;
-        align-items: center;
-        line-height: 3rem;
-    }
+.nav-item ::deep a {
+    color: rgba(255,255,255,0.8);
+    border-radius: 4px;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    transition: all 0.2s ease;
+}
 
 .nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
+    background-color: var(--goznak-primary);
     color: white;
 }
 
 .nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
+    background-color: var(--goznak-secondary);
     color: white;
 }
 
-@media (min-width: 641px) {
+.nav-scrollable {
+    padding-top: 1rem;
+}
+
+@media (min-width: 768px) {
     .navbar-toggler {
         display: none;
     }
 
     .collapse {
-        /* Never collapse the sidebar for wide screens */
         display: block;
     }
     
     .nav-scrollable {
-        /* Allow sidebar to scroll for tall menus */
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }

@@ -1,7 +1,67 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+    --goznak-primary: #1a4789;    /* Основной синий цвет */
+    --goznak-secondary: #2c5aa0;  /* Более светлый синий */
+    --goznak-accent: #f0b323;     /* Золотой акцент */
+    --goznak-dark: #1c1f2b;       /* Тёмно-синий */
+    --goznak-light: #f5f6f8;      /* Светлый фон */
+    --goznak-text: #2c3e50;       /* Основной цвет текста */
+    --goznak-success: #28a745;    /* Зелёный для успешных операций */
+    --goznak-warning: #ffc107;    /* Жёлтый для предупреждений */
+    --goznak-danger: #dc3545;     /* Красный для ошибок */
+}
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--goznak-text);
+    background-color: var(--goznak-light);
+}
+
+/* Корпоративные кнопки */
+.btn-goznak {
+    background-color: var(--goznak-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-goznak:hover {
+    background-color: var(--goznak-secondary);
+    color: white;
+}
+
+/* Корпоративные карточки */
+.card-goznak {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.card-goznak:hover {
+    transform: translateY(-2px);
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--goznak-primary);
+    font-weight: 500;
+}
+
+/* Ссылки */
+a {
+    color: var(--goznak-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--goznak-secondary);
+    text-decoration: none;
 }
 
 h1:focus {

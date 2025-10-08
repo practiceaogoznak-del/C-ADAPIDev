@@ -1,0 +1,129 @@
+.tasks-page {
+    padding: 1rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: var(--goznak-primary);
+}
+
+.tasks-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    max-width: 300px;
+}
+
+.filters-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-select {
+    min-width: 150px;
+}
+
+.tasks-grid {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+::deep .table {
+    margin-bottom: 0;
+}
+
+::deep .table th {
+    background-color: var(--goznak-primary);
+    color: white;
+    border-bottom: none;
+    padding: 1rem;
+}
+
+::deep .table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.status-новая {
+    background-color: var(--goznak-info);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-в-работе {
+    background-color: var(--goznak-primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-на-проверке {
+    background-color: var(--goznak-warning);
+    color: var(--goznak-dark);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-завершена {
+    background-color: var(--goznak-success);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.priority-высокий {
+    color: var(--goznak-danger);
+    font-weight: 500;
+}
+
+.priority-средний {
+    color: var(--goznak-warning);
+    font-weight: 500;
+}
+
+.priority-низкий {
+    color: var(--goznak-success);
+    font-weight: 500;
+}
+
+::deep .btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .tasks-filters {
+        flex-direction: column;
+    }
+
+    .input-group {
+        max-width: 100%;
+    }
+
+    .filters-group {
+        flex-direction: column;
+    }
+
+    .form-select {
+        width: 100%;
+    }
+}

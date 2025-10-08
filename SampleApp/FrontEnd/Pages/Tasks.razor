@@ -1,0 +1,105 @@
+@page "/tasks"
+
+@inject TaskService TaskService
+
+<PageTitle>Задачи - ПФ Гознак</PageTitle>
+
+<div class="tasks-page">
+    <div class="page-header">
+        <h1>Управление задачами</h1>
+        <button class="btn btn-primary">
+            <span class="oi oi-plus"></span> Новая задача
+        </button>
+    </div>
+
+    <div class="tasks-filters">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Поиск задач..." />
+            <button class="btn btn-outline-primary">
+                <span class="oi oi-magnifying-glass"></span>
+            </button>
+        </div>
+        <div class="filters-group">
+            <select class="form-select">
+                <option selected>Все статусы</option>
+                <option>Новая</option>
+                <option>В работе</option>
+                <option>На проверке</option>
+                <option>Завершена</option>
+            </select>
+            <select class="form-select">
+                <option selected>Все приоритеты</option>
+                <option>Высокий</option>
+                <option>Средний</option>
+                <option>Низкий</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="tasks-grid">
+        @if (tasks == null)
+        {
+            <p>Загрузка...</p>
+        }
+        else if (!tasks.Any())
+        {
+            <p>Нет доступных задач</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Название</th>
+                        <th>Статус</th>
+                        <th>Приоритет</th>
+                        <th>Срок</th>
+                        <th>Исполнитель</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in tasks)
+                    {
+                        <tr>
+                            <td>@task.TaskNumber</td>
+                            <td>@task.Title</td>
+                            <td><span class="status-@task.Status.ToLower()">@task.Status</span></td>
+                            <td><span class="priority-@task.Priority.ToLower()">@task.Priority</span></td>
+                            <td>@task.DueDate.ToString("dd.MM.yyyy")</td>
+                            <td>@task.AssignedTo</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ViewTask(task.TaskNumber))">
+                                    <span class="oi oi-eye"></span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="@(() => EditTask(task.TaskNumber))">
+                                    <span class="oi oi-pencil"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private IEnumerable<TaskItem> tasks = Enumerable.Empty<TaskItem>();
+
+    protected override void OnInitialized()
+    {
+        tasks = TaskService.GetTasks();
+    }
+
+    private void ViewTask(string taskNumber)
+    {
+        // TODO: Реализовать просмотр задачи
+    }
+
+    private void EditTask(string taskNumber)
+    {
+        // TODO: Реализовать редактирование задачи
+    }
+}

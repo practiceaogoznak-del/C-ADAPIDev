@@ -1,19 +1,68 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Web
 
-<PageTitle>FrontEnd</PageTitle>
+<PageTitle>АО "Гознак" - Портал управления</PageTitle>
 
 <div class="page">
     <div class="sidebar">
+        <div class="logo-container">
+            <img src="images/goznak-logo.png" alt="АО Гознак" class="logo" />
+            <div class="sidebar-title">Портал управления</div>
+        </div>
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row">
+            <div class="breadcrumb-container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@(NavigationManager.Uri.Split('/').Last())</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="user-info">
+                <span class="user-name">@(System.Security.Claims.ClaimsPrincipal.Current?.Identity?.Name ?? "Гость")</span>
+                <div class="user-controls">
+                    <button class="btn btn-link notifications-btn" title="Уведомления">
+                        <span class="oi oi-bell"></span>
+                    </button>
+                    <button class="btn btn-link settings-btn" title="Настройки">
+                        <span class="oi oi-cog"></span>
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm logout-btn">
+                        <span class="oi oi-account-logout"></span> Выход
+                    </button>
+                </div>
+            </div>
         </div>
 
         <article class="content px-4">
             @Body
         </article>
+
+        <footer class="goznak-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; @DateTime.Now.Year АО «ПЕРМСКАЯ ПЕЧАТНАЯ ФАБРИКА ГОЗНАК». Все права защищены.</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="footer-links">
+                            <a href="#" class="footer-link">Помощь</a>
+                            <a href="#" class="footer-link">Контакты</a>
+                            <a href="#" class="footer-link">Правовая информация</a>
+                        </div>
+                        <p>Техническая поддержка: <a href="mailto:support@ppfgoznak.ru">support@ppfgoznak.ru</a></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
 </div>
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+}
