@@ -3,32 +3,27 @@ using FrontEnd.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+// Configure Kestrel
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(4000);
+});builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<TaskService>();
 
 builder.Services.AddHttpClient<WeatherForecastClient>(c =>
 {
-    var url = builder.Configuration["WEATHER_URL"] 
-        ?? throw new InvalidOperationException("WEATHER_URL is not set");
-
-    c.BaseAddress = new(url);
+    c.BaseAddress = new Uri("http://localhost:4001");
 });
 
 builder.Services.AddHttpClient<AccessRequestClient>(c =>
 {
-    var url = builder.Configuration["BACKEND_URL"] 
-        ?? throw new InvalidOperationException("BACKEND_URL is not set");
-
-    c.BaseAddress = new(url);
+    c.BaseAddress = new Uri("http://localhost:4001");
 });
 
 builder.Services.AddHttpClient<AuthenticationService>(c =>
 {
-    var url = builder.Configuration["BACKEND_URL"] 
-        ?? throw new InvalidOperationException("BACKEND_URL is not set");
-
-    c.BaseAddress = new(url);
+    c.BaseAddress = new Uri("http://localhost:4001");
 });
 
 var app = builder.Build();
@@ -39,7 +34,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Отключаем HTTPS для разработки
+// app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();

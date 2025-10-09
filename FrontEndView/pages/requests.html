@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявки - Гознак</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <!-- Header and Nav will be included via JS -->
+    <main class="main">
+        <div class="card">
+            <h2>Создание заявки</h2>
+            <form id="requestForm" class="form">
+                <div class="form-group">
+                    <label for="requestType" class="form-label">Тип заявки</label>
+                    <select id="requestType" class="form-control" required>
+                        <option value="">Выберите тип заявки</option>
+                        <option value="access">Доступ к системе</option>
+                        <option value="equipment">Оборудование</option>
+                        <option value="software">Программное обеспечение</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Описание</label>
+                    <textarea id="description" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority" class="form-label">Приоритет</label>
+                    <select id="priority" class="form-control" required>
+                        <option value="low">Низкий</option>
+                        <option value="medium">Средний</option>
+                        <option value="high">Высокий</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Отправить заявку</button>
+            </form>
+        </div>
+
+        <div class="card mt-2">
+            <h2>Мои заявки</h2>
+            <div id="requestsList" class="requests-list">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </main>
+    <!-- Footer will be included via JS -->
+    <script src="/js/site.js"></script>
+    <script src="/js/requests.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+/* Base styles */
+:root {
+    --goznak-primary: #1a4789;    /* Основной синий цвет */
+    --goznak-secondary: #2c5aa0;  /* Более светлый синий */
+    --goznak-accent: #f0b323;     /* Золотой акцент */
+    --goznak-dark: #1c1f2b;       /* Тёмно-синий */
+    --goznak-light: #f5f6f8;      /* Светлый фон */
+    --goznak-text: #2c3e50;       /* Основной цвет текста */
+    --goznak-success: #28a745;    /* Зелёный для успешных операций */
+    --goznak-warning: #ffc107;    /* Жёлтый для предупреждений */
+    --goznak-danger: #dc3545;     /* Красный для ошибок */
+}
+
+body {
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--goznak-text);
+    background-color: var(--goznak-light);
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+.header {
+    background-color: var(--goznak-primary);
+    padding: 1rem;
+    color: white;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+}
+
+/* Navigation */
+.nav {
+    background-color: var(--goznak-dark);
+    padding: 0.5rem 0;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.nav-item {
+    margin-right: 2rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--goznak-accent);
+}
+
+/* Main content */
+.main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--goznak-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--goznak-secondary);
+}
+
+.btn-secondary {
+    background-color: var(--goznak-accent);
+    color: var(--goznak-dark);
+}
+
+.btn-secondary:hover {
+    background-color: #d9a31f;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--goznak-primary);
+    box-shadow: 0 0 0 2px rgba(26, 71, 137, 0.2);
+}
+
+/* Tables */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.table th {
+    background-color: var(--goznak-light);
+    font-weight: 500;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--goznak-dark);
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Utilities */
+.text-center {
+    text-align: center;
+}
+
+.mt-2 {
+    margin-top: 2rem;
+}
+
+.mb-2 {
+    margin-bottom: 2rem;
+}
